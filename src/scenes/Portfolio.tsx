@@ -2,6 +2,7 @@ import { useRef, useEffect, useContext, useState } from 'react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { holdings } from '../data/demo'
 import { ReducedMotionContext } from '../context'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 const typeLabel: Record<string, string> = {
   public_equity: 'Listed equity',
@@ -28,17 +29,18 @@ export default function Portfolio() {
   const stickyRef = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
   const reducedMotion = useContext(ReducedMotionContext)
+  const isMobile = useIsMobile()
+  const noMotion = reducedMotion || isMobile
 
   useEffect(() => {
     if (!outerRef.current) return
-    if (reducedMotion) { setVisible(true); return }
+    if (noMotion) { setVisible(true); return }
 
     const enterTrigger = ScrollTrigger.create({
       trigger: outerRef.current,
       start: 'top 80%',
       onEnter: () => setVisible(true),
     })
-
     const pinTrigger = ScrollTrigger.create({
       trigger: outerRef.current,
       start: 'top top',
@@ -46,37 +48,36 @@ export default function Portfolio() {
       pin: stickyRef.current,
       pinSpacing: false,
     })
-
     return () => { enterTrigger.kill(); pinTrigger.kill() }
-  }, [reducedMotion])
+  }, [noMotion])
 
   const grid = (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 max-w-3xl mx-auto">
       {holdings.map((h, i) => (
         <div
           key={h.id}
-          className="bg-ground-2 border border-rule rounded-lg p-5"
+          className="bg-ground-2 border border-rule rounded-lg p-4 md:p-5"
           style={{
             opacity: visible ? 1 : 0,
             transform: visible ? 'translateY(0)' : 'translateY(20px)',
             transition: `opacity 0.5s ease ${i * 80}ms, transform 0.5s ease ${i * 80}ms`,
           }}
         >
-          <p className="text-ink font-medium leading-snug mb-3">{h.name}</p>
-          <span className={`text-xs font-mono border rounded px-2 py-0.5 ${typeColor[h.type]}`}>
+          <p className="text-ink font-medium leading-snug mb-2 md:mb-3 text-sm md:text-base">{h.name}</p>
+          <span className={`text-xs font-mono border rounded px-1.5 md:px-2 py-0.5 ${typeColor[h.type]}`}>
             {typeLabel[h.type]}
           </span>
-          <p className="text-2xl font-mono text-ink mt-4">{formatMoney(h.allocation)}</p>
+          <p className="text-xl md:text-2xl font-mono text-ink mt-3 md:mt-4">{formatMoney(h.allocation)}</p>
         </div>
       ))}
     </div>
   )
 
-  if (reducedMotion) {
+  if (noMotion) {
     return (
-      <section id="portfolio" aria-label="The portfolio" className="py-24 px-4 md:px-8">
-        <div className="max-w-2xl mx-auto mb-12">
-          <p className="text-ink-mute text-lg">This is the portfolio. Fifty million dollars of stated good intentions.</p>
+      <section id="portfolio" aria-label="The portfolio" className="py-16 md:py-24 px-4 md:px-8">
+        <div className="max-w-2xl mx-auto mb-8">
+          <p className="text-ink-mute text-base md:text-lg">This is the portfolio. Fifty million dollars of stated good intentions.</p>
         </div>
         {grid}
       </section>

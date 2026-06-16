@@ -2,6 +2,7 @@ import { useRef, useEffect, useContext, useState } from 'react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { modes } from '../data/demo'
 import { ReducedMotionContext } from '../context'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 const mandateParts = [
   { text: "This Trust holds the family's capital for the long benefit of ", highlight: false },
@@ -24,10 +25,11 @@ export default function Mandate() {
   const stickyRef = useRef<HTMLDivElement>(null)
   const [progress, setProgress] = useState(0)
   const reducedMotion = useContext(ReducedMotionContext)
+  const isMobile = useIsMobile()
+  const noMotion = reducedMotion || isMobile
 
   useEffect(() => {
-    if (reducedMotion || !outerRef.current) return
-
+    if (noMotion || !outerRef.current) return
     const trigger = ScrollTrigger.create({
       trigger: outerRef.current,
       start: 'top top',
@@ -37,21 +39,20 @@ export default function Mandate() {
       scrub: 0.5,
       onUpdate: (self) => setProgress(self.progress),
     })
-
     return () => trigger.kill()
-  }, [reducedMotion])
+  }, [noMotion])
 
   const highlightCount = mandateParts.filter(p => p.highlight).length
   let hIdx = 0
-  const p = reducedMotion ? 1 : progress
+  const p = noMotion ? 1 : progress
 
   const content = (
-    <div className="max-w-5xl mx-auto px-4 md:px-8 grid md:grid-cols-2 gap-12 items-start">
+    <div className="max-w-5xl mx-auto px-4 md:px-8 grid md:grid-cols-2 gap-8 md:gap-12 items-start">
       <div className="bg-ground-2 rounded-lg p-5 md:p-8 border border-rule">
         <p className="text-xs font-mono text-ink-mute uppercase tracking-widest mb-4">
           The Holloway Family Trust — Investment Mandate (extract)
         </p>
-        <blockquote className="text-ink leading-relaxed text-lg italic">
+        <blockquote className="text-ink leading-relaxed text-base md:text-lg italic">
           {mandateParts.map((part, i) => {
             if (!part.highlight) return <span key={i}>{part.text}</span>
             const thisIdx = hIdx++
@@ -70,13 +71,13 @@ export default function Mandate() {
           })}
         </blockquote>
       </div>
-      <div className="flex flex-col gap-4 mt-8 md:mt-0">
+      <div className="flex flex-col gap-3 md:gap-4 mt-4 md:mt-0">
         {modes.map((m, i) => {
           const revealed = p > (i / modes.length) * 0.5 + 0.5
           return (
             <div
               key={m.id}
-              className="flex items-center gap-4"
+              className="flex items-center gap-3 md:gap-4"
               style={{
                 opacity: revealed ? 1 : 0,
                 transform: revealed ? 'translateY(0)' : 'translateY(12px)',
@@ -85,8 +86,8 @@ export default function Mandate() {
             >
               <div className="w-2 h-2 rounded-full bg-support flex-shrink-0" />
               <div>
-                <span className="text-ink font-medium">{m.label}</span>
-                <span className="text-ink-mute text-sm ml-3">↳ {m.shadow}</span>
+                <span className="text-ink font-medium text-sm md:text-base">{m.label}</span>
+                <span className="text-ink-mute text-xs md:text-sm ml-2 md:ml-3">↳ {m.shadow}</span>
               </div>
             </div>
           )
@@ -95,11 +96,11 @@ export default function Mandate() {
     </div>
   )
 
-  if (reducedMotion) {
+  if (noMotion) {
     return (
-      <section id="mandate" aria-label="The mandate" className="py-24">
+      <section id="mandate" aria-label="The mandate" className="py-16 md:py-24">
         {content}
-        <div className="max-w-2xl mx-auto px-4 md:px-8 mt-16 space-y-4 text-ink-mute">
+        <div className="max-w-2xl mx-auto px-4 md:px-8 mt-8 md:mt-16 space-y-4 text-ink-mute">
           <p>Every mandate is a statement of love — for people, places, a future.</p>
           <p>We keep it in the client's own words first. Then we translate it into something we can measure against — six modes of love, each with a shadow it can collapse into.</p>
         </div>
@@ -109,9 +110,9 @@ export default function Mandate() {
 
   return (
     <section id="mandate" aria-label="The mandate" ref={outerRef} style={{ height: '350vh' }}>
-      <div ref={stickyRef} className="h-screen flex flex-col justify-center py-16">
+      <div ref={stickyRef} className="h-screen flex flex-col justify-center py-8">
         {content}
-        <div className="max-w-2xl mx-auto px-4 md:px-8 mt-12 space-y-4 text-ink-mute text-lg">
+        <div className="max-w-2xl mx-auto px-4 md:px-8 mt-8 md:mt-12 space-y-4 text-ink-mute text-lg">
           <p>Every mandate is a statement of love — for people, places, a future.</p>
           <p>We keep it in the client's own words first. Then we translate it into something we can measure against — six modes of love, each with a shadow it can collapse into.</p>
         </div>

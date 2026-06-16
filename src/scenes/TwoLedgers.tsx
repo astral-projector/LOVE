@@ -2,6 +2,7 @@ import { useRef, useEffect, useContext, useState } from 'react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { holdings, causalWeight, exposureWeight } from '../data/demo'
 import { ReducedMotionContext } from '../context'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 const meridian = holdings.find(h => h.id === 'meridian')!
 
@@ -14,9 +15,11 @@ export default function TwoLedgers() {
   const stickyRef = useRef<HTMLDivElement>(null)
   const [progress, setProgress] = useState(0)
   const reducedMotion = useContext(ReducedMotionContext)
+  const isMobile = useIsMobile()
+  const noMotion = reducedMotion || isMobile
 
   useEffect(() => {
-    if (reducedMotion || !outerRef.current) return
+    if (noMotion || !outerRef.current) return
     const trigger = ScrollTrigger.create({
       trigger: outerRef.current,
       start: 'top top',
@@ -27,60 +30,60 @@ export default function TwoLedgers() {
       onUpdate: (self) => setProgress(self.progress),
     })
     return () => trigger.kill()
-  }, [reducedMotion])
+  }, [noMotion])
 
-  const p = reducedMotion ? 1 : progress
+  const p = noMotion ? 1 : progress
   const causal = causalWeight(meridian)
   const exposure = exposureWeight(meridian)
 
   const content = (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-rule max-w-3xl w-full rounded-lg overflow-hidden">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-px md:bg-rule max-w-3xl w-full rounded-lg md:overflow-hidden">
       <div
-        className="bg-ground-2 p-5 md:p-8"
+        className="bg-ground-2 p-5 md:p-8 rounded-lg md:rounded-none border border-rule md:border-0"
         style={{ opacity: Math.min(1, p * 2), transform: `translateX(${(1 - Math.min(1, p * 2)) * -20}px)`, transition: 'none' }}
       >
-        <p className="text-xs font-mono text-ink-mute uppercase tracking-widest mb-6">Causal</p>
-        <p className="text-ink text-xl mb-2">What your capital moved</p>
-        <div className="mt-8 space-y-3">
+        <p className="text-xs font-mono text-ink-mute uppercase tracking-widest mb-4 md:mb-6">Causal</p>
+        <p className="text-ink text-lg md:text-xl mb-2">What your capital moved</p>
+        <div className="mt-4 md:mt-8 space-y-3">
           {meridian.activities.map(a => (
-            <div key={a.id} className="flex items-center justify-between">
-              <span className="text-ink-mute text-sm">{a.label}</span>
-              <span className="font-mono text-sm text-ink">{formatMoney(causal / 3)}</span>
+            <div key={a.id} className="flex items-center justify-between gap-2">
+              <span className="text-ink-mute text-xs md:text-sm">{a.label}</span>
+              <span className="font-mono text-sm text-ink flex-shrink-0">{formatMoney(causal / 3)}</span>
             </div>
           ))}
         </div>
-        <div className="mt-6 pt-6 border-t border-rule">
+        <div className="mt-4 md:mt-6 pt-4 md:pt-6 border-t border-rule">
           <p className="text-xs font-mono text-gate">~2% causal credit</p>
-          <p className="text-xs text-ink-mute mt-1">{meridian.additionality.note}</p>
+          <p className="text-xs text-ink-mute mt-1 leading-relaxed">{meridian.additionality.note}</p>
         </div>
       </div>
 
       <div
-        className="bg-ground-2 p-5 md:p-8"
+        className="bg-ground-2 p-5 md:p-8 rounded-lg md:rounded-none border border-rule md:border-0"
         style={{ opacity: Math.min(1, p * 2 - 0.2), transform: `translateX(${(1 - Math.min(1, p * 2 - 0.2)) * 20}px)`, transition: 'none' }}
       >
-        <p className="text-xs font-mono text-ink-mute uppercase tracking-widest mb-6">Exposure</p>
-        <p className="text-ink text-xl mb-2">What you're attached to</p>
-        <div className="mt-8 space-y-3">
+        <p className="text-xs font-mono text-ink-mute uppercase tracking-widest mb-4 md:mb-6">Exposure</p>
+        <p className="text-ink text-lg md:text-xl mb-2">What you're attached to</p>
+        <div className="mt-4 md:mt-8 space-y-3">
           {meridian.activities.map(a => (
-            <div key={a.id} className="flex items-center justify-between">
-              <span className="text-ink-mute text-sm">{a.label}</span>
-              <span className="font-mono text-sm text-ink">{formatMoney(exposure / 3)}</span>
+            <div key={a.id} className="flex items-center justify-between gap-2">
+              <span className="text-ink-mute text-xs md:text-sm">{a.label}</span>
+              <span className="font-mono text-sm text-ink flex-shrink-0">{formatMoney(exposure / 3)}</span>
             </div>
           ))}
         </div>
-        <div className="mt-6 pt-6 border-t border-rule">
+        <div className="mt-4 md:mt-6 pt-4 md:pt-6 border-t border-rule">
           <p className="text-xs font-mono text-ink-mute">Full allocation retained</p>
         </div>
       </div>
     </div>
   )
 
-  if (reducedMotion) {
+  if (noMotion) {
     return (
-      <section id="ledgers" aria-label="Two ledgers" className="py-24 px-4 md:px-8">
-        <div className="max-w-2xl mx-auto mb-8">
-          <p className="text-ink-mute text-lg">Two questions that almost everyone collapses into one. What did your money actually <em>cause</em> to happen? And what are you simply <em>attached to</em>?</p>
+      <section id="ledgers" aria-label="Two ledgers" className="py-16 md:py-24 px-4 md:px-8">
+        <div className="max-w-2xl mx-auto mb-6 md:mb-8">
+          <p className="text-ink-mute text-base md:text-lg">Two questions that almost everyone collapses into one. What did your money actually <em>cause</em> to happen? And what are you simply <em>attached to</em>?</p>
         </div>
         <div className="flex justify-center">{content}</div>
       </section>

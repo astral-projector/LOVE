@@ -4,6 +4,7 @@ import { sankey, sankeyLinkHorizontal } from 'd3-sankey'
 import type { SankeyNode, SankeyLink } from 'd3-sankey'
 import { holdings, modes, causalWeight, exposureWeight } from '../data/demo'
 import { ReducedMotionContext } from '../context'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 type ViewMode = 'causal' | 'exposure'
 
@@ -106,6 +107,95 @@ function getLinkColor(link: SLink, opacity = 0.6): string {
   }
 }
 
+function MobileSankey({ viewMode, setViewMode }: { viewMode: ViewMode; setViewMode: (v: ViewMode) => void }) {
+  const weightFn = viewMode === 'causal' ? causalWeight : exposureWeight
+
+  return (
+    <section id="sankey" aria-label="The Love Sankey" className="py-16 px-4">
+      <p className="text-ink-mute text-base leading-relaxed mb-6 text-center max-w-xl mx-auto">
+        This is the portfolio, told honestly. Flip between what you <em className="text-ink not-italic">caused</em> and what you're <em className="text-ink not-italic">attached to</em>.
+      </p>
+
+      <div className="flex bg-ground-2 rounded-lg border border-rule overflow-hidden mx-auto w-fit mb-8">
+        {(['causal', 'exposure'] as ViewMode[]).map(v => (
+          <button
+            key={v}
+            onClick={() => setViewMode(v)}
+            aria-pressed={viewMode === v}
+            className={`px-5 py-2 text-sm font-mono transition-colors ${viewMode === v ? 'bg-support text-ground' : 'text-ink-mute'}`}
+          >
+            {v.charAt(0).toUpperCase() + v.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      <div className="space-y-4 max-w-xl mx-auto">
+        {holdings.map(h => {
+          const weight = weightFn(h)
+          const maxWeight = 12_000_000 * 0.95
+          const barWidth = weight / maxWeight
+          const isGrant = h.type === 'grant'
+
+          return (
+            <div key={h.id} className="bg-ground-2 border border-rule rounded-lg p-4">
+              <div className="flex items-start justify-between gap-2 mb-3">
+                <p className="text-ink text-sm font-medium leading-snug">{h.name}</p>
+                {isGrant && (
+                  <span className="text-xs font-mono text-gate border border-gate rounded px-1.5 py-0.5 flex-shrink-0">grant</span>
+                )}
+              </div>
+
+              {/* Weight bar */}
+              <div className="h-2 bg-rule rounded overflow-hidden mb-3">
+                <div
+                  className="h-full rounded transition-all duration-500"
+                  style={{ width: `${barWidth * 100}%`, backgroundColor: weight < 1 ? 'var(--rule)' : 'var(--support)' }}
+                />
+              </div>
+
+              {weight < 1 ? (
+                <p className="text-xs font-mono text-gate">Near-zero in {viewMode} view — {h.additionality.note}</p>
+              ) : (
+                <div className="space-y-1">
+                  {h.activities.flatMap(a =>
+                    a.impacts.map((imp, j) => (
+                      <div key={`${a.id}-${j}`} className="flex items-center gap-2 text-xs">
+                        <span
+                          className="font-mono"
+                          style={{ color: imp.polarity === 'support' ? 'var(--support)' : 'var(--erosion)' }}
+                        >
+                          {imp.polarity === 'support' ? '↑' : '↓'}
+                        </span>
+                        <span className="text-ink-mute">{imp.mode}</span>
+                        <span className="text-ink-mute opacity-50">·</span>
+                        <span className="text-ink-mute truncate">{a.label}</span>
+                      </div>
+                    ))
+                  )}
+                  {isGrant && (
+                    <p className="text-xs font-mono text-gate mt-2">⚠ Coherence assessed — outcome not verified</p>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="flex justify-center gap-6 mt-8 text-xs font-mono">
+        <span className="flex items-center gap-2">
+          <span className="w-3 h-1 inline-block rounded" style={{ backgroundColor: 'var(--support)' }} />
+          Support
+        </span>
+        <span className="flex items-center gap-2">
+          <span className="w-3 h-1 inline-block rounded" style={{ backgroundColor: 'var(--erosion)' }} />
+          Erosion
+        </span>
+      </div>
+    </section>
+  )
+}
+
 export default function LoveSankey() {
   const outerRef = useRef<HTMLDivElement>(null)
   const stickyRef = useRef<HTMLDivElement>(null)
@@ -114,12 +204,11 @@ export default function LoveSankey() {
   const [tooltip, setTooltip] = useState<{ x: number; y: number; content: string } | null>(null)
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 })
   const reducedMotion = useContext(ReducedMotionContext)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     const update = () => {
-      const isMobile = window.innerWidth < 768
-      const margin = isMobile ? 32 : 64
-      const w = Math.min(window.innerWidth - margin, 1000)
+      const w = Math.min(window.innerWidth - 64, 1000)
       const h = Math.min(window.innerHeight - 200, 600)
       setDimensions({ width: w, height: h })
     }
@@ -129,7 +218,7 @@ export default function LoveSankey() {
   }, [])
 
   useEffect(() => {
-    if (reducedMotion || !outerRef.current) return
+    if (isMobile || reducedMotion || !outerRef.current) return
     const trigger = ScrollTrigger.create({
       trigger: outerRef.current,
       start: 'top top',
@@ -139,7 +228,11 @@ export default function LoveSankey() {
       scrub: 0.5,
     })
     return () => trigger.kill()
-  }, [reducedMotion])
+  }, [isMobile, reducedMotion])
+
+  if (isMobile) {
+    return <MobileSankey viewMode={viewMode} setViewMode={setViewMode} />
+  }
 
   const { nodes, links } = buildGraph(viewMode)
   const { width, height } = dimensions
