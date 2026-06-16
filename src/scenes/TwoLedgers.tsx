@@ -1,0 +1,104 @@
+import { useRef, useEffect, useContext } from 'react'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { holdings, causalWeight, exposureWeight } from '../data/demo'
+import { ReducedMotionContext } from '../components/Walkthrough'
+
+const meridian = holdings.find(h => h.id === 'meridian')!
+
+function formatMoney(n: number) {
+  return `$${(n / 1000).toFixed(0)}k`
+}
+
+export default function TwoLedgers() {
+  const outerRef = useRef<HTMLDivElement>(null)
+  const stickyRef = useRef<HTMLDivElement>(null)
+  const dividerRef = useRef<HTMLDivElement>(null)
+  const leftRef = useRef<HTMLDivElement>(null)
+  const rightRef = useRef<HTMLDivElement>(null)
+  const reducedMotion = useContext(ReducedMotionContext)
+
+  useEffect(() => {
+    if (reducedMotion || !outerRef.current) return
+
+    gsap.set([dividerRef.current, leftRef.current, rightRef.current], { opacity: 0 })
+
+    const tl = gsap.timeline({ paused: true })
+    tl.to(dividerRef.current, { opacity: 1, scaleY: 1, duration: 0.4 })
+    tl.to(leftRef.current, { opacity: 1, x: 0, duration: 0.4 }, 0.2)
+    tl.to(rightRef.current, { opacity: 1, x: 0, duration: 0.4 }, 0.3)
+
+    const trigger = ScrollTrigger.create({
+      trigger: outerRef.current,
+      start: 'top top',
+      end: 'bottom bottom',
+      pin: stickyRef.current,
+      pinSpacing: false,
+      scrub: 0.5,
+      onUpdate: (self) => tl.progress(self.progress),
+    })
+
+    return () => { trigger.kill(); tl.kill() }
+  }, [reducedMotion])
+
+  const causal = causalWeight(meridian)
+  const exposure = exposureWeight(meridian)
+
+  const content = (
+    <div className="grid grid-cols-2 gap-px bg-rule max-w-3xl w-full rounded-lg overflow-hidden">
+      <div ref={leftRef} className="bg-ground-2 p-8">
+        <p className="text-xs font-mono text-ink-mute uppercase tracking-widest mb-6">Causal</p>
+        <p className="text-ink text-xl mb-2">What your capital moved</p>
+        <div className="mt-8 space-y-3">
+          {meridian.activities.map(a => (
+            <div key={a.id} className="flex items-center justify-between">
+              <span className="text-ink-mute text-sm">{a.label}</span>
+              <span className="font-mono text-sm text-ink">{formatMoney(causal / 3)}</span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-6 pt-6 border-t border-rule">
+          <p className="text-xs font-mono text-gate">~2% causal credit</p>
+          <p className="text-xs text-ink-mute mt-1">{meridian.additionality.note}</p>
+        </div>
+      </div>
+      <div ref={rightRef} className="bg-ground-2 p-8">
+        <p className="text-xs font-mono text-ink-mute uppercase tracking-widest mb-6">Exposure</p>
+        <p className="text-ink text-xl mb-2">What you're attached to</p>
+        <div className="mt-8 space-y-3">
+          {meridian.activities.map(a => (
+            <div key={a.id} className="flex items-center justify-between">
+              <span className="text-ink-mute text-sm">{a.label}</span>
+              <span className="font-mono text-sm text-ink">{formatMoney(exposure / 3)}</span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-6 pt-6 border-t border-rule">
+          <p className="text-xs font-mono text-ink-mute">Full allocation retained</p>
+        </div>
+      </div>
+    </div>
+  )
+
+  if (reducedMotion) {
+    return (
+      <section id="ledgers" aria-label="Two ledgers" className="py-24 px-8">
+        <div className="max-w-2xl mx-auto mb-8">
+          <p className="text-ink-mute text-lg">Two questions that almost everyone collapses into one. What did your money actually <em>cause</em> to happen? And what are you simply <em>attached to</em>?</p>
+        </div>
+        <div className="flex justify-center">{content}</div>
+      </section>
+    )
+  }
+
+  return (
+    <section id="ledgers" aria-label="Two ledgers" ref={outerRef} style={{ height: '300vh' }}>
+      <div ref={stickyRef} className="h-screen flex flex-col justify-center items-center px-8 gap-8">
+        <p className="text-ink-mute text-lg text-center max-w-2xl leading-relaxed">
+          Two questions that almost everyone collapses into one. What did your money actually <em className="not-italic text-ink">cause</em> to happen? And what are you simply <em className="not-italic text-ink">attached to</em>?
+        </p>
+        {content}
+      </div>
+    </section>
+  )
+}
