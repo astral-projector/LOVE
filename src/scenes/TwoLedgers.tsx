@@ -34,9 +34,9 @@ export default function TwoLedgers() {
   const exposure = exposureWeight(meridian)
 
   const content = (
-    <div className="grid grid-cols-2 gap-px bg-rule max-w-3xl w-full rounded-lg overflow-hidden">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-rule max-w-3xl w-full rounded-lg overflow-hidden">
       <div
-        className="bg-ground-2 p-8"
+        className="bg-ground-2 p-5 md:p-8"
         style={{ opacity: Math.min(1, p * 2), transform: `translateX(${(1 - Math.min(1, p * 2)) * -20}px)`, transition: 'none' }}
       >
         <p className="text-xs font-mono text-ink-mute uppercase tracking-widest mb-6">Causal</p>
@@ -56,7 +56,7 @@ export default function TwoLedgers() {
       </div>
 
       <div
-        className="bg-ground-2 p-8"
+        className="bg-ground-2 p-5 md:p-8"
         style={{ opacity: Math.min(1, p * 2 - 0.2), transform: `translateX(${(1 - Math.min(1, p * 2 - 0.2)) * 20}px)`, transition: 'none' }}
       >
         <p className="text-xs font-mono text-ink-mute uppercase tracking-widest mb-6">Exposure</p>
@@ -78,7 +78,7 @@ export default function TwoLedgers() {
 
   if (reducedMotion) {
     return (
-      <section id="ledgers" aria-label="Two ledgers" className="py-24 px-8">
+      <section id="ledgers" aria-label="Two ledgers" className="py-24 px-4 md:px-8">
         <div className="max-w-2xl mx-auto mb-8">
           <p className="text-ink-mute text-lg">Two questions that almost everyone collapses into one. What did your money actually <em>cause</em> to happen? And what are you simply <em>attached to</em>?</p>
         </div>
@@ -89,7 +89,7 @@ export default function TwoLedgers() {
 
   return (
     <section id="ledgers" aria-label="Two ledgers" ref={outerRef} style={{ height: '300vh' }}>
-      <div ref={stickyRef} className="h-screen flex flex-col justify-center items-center px-8 gap-8">
+      <div ref={stickyRef} className="h-screen flex flex-col justify-center items-center px-4 md:px-8 gap-8">
         <p className="text-ink-mute text-lg text-center max-w-2xl leading-relaxed">
           Two questions that almost everyone collapses into one. What did your money actually <em className="not-italic text-ink">cause</em> to happen? And what are you simply <em className="not-italic text-ink">attached to</em>?
         </p>

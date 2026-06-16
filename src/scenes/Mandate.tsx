@@ -46,8 +46,8 @@ export default function Mandate() {
   const p = reducedMotion ? 1 : progress
 
   const content = (
-    <div className="max-w-5xl mx-auto px-8 grid md:grid-cols-2 gap-12 items-start">
-      <div className="bg-ground-2 rounded-lg p-8 border border-rule">
+    <div className="max-w-5xl mx-auto px-4 md:px-8 grid md:grid-cols-2 gap-12 items-start">
+      <div className="bg-ground-2 rounded-lg p-5 md:p-8 border border-rule">
         <p className="text-xs font-mono text-ink-mute uppercase tracking-widest mb-4">
           The Holloway Family Trust — Investment Mandate (extract)
         </p>
@@ -70,7 +70,7 @@ export default function Mandate() {
           })}
         </blockquote>
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 mt-8 md:mt-0">
         {modes.map((m, i) => {
           const revealed = p > (i / modes.length) * 0.5 + 0.5
           return (
@@ -99,7 +99,7 @@ export default function Mandate() {
     return (
       <section id="mandate" aria-label="The mandate" className="py-24">
         {content}
-        <div className="max-w-2xl mx-auto px-8 mt-16 space-y-4 text-ink-mute">
+        <div className="max-w-2xl mx-auto px-4 md:px-8 mt-16 space-y-4 text-ink-mute">
           <p>Every mandate is a statement of love — for people, places, a future.</p>
           <p>We keep it in the client's own words first. Then we translate it into something we can measure against — six modes of love, each with a shadow it can collapse into.</p>
         </div>
@@ -111,7 +111,7 @@ export default function Mandate() {
     <section id="mandate" aria-label="The mandate" ref={outerRef} style={{ height: '350vh' }}>
       <div ref={stickyRef} className="h-screen flex flex-col justify-center py-16">
         {content}
-        <div className="max-w-2xl mx-auto px-8 mt-12 space-y-4 text-ink-mute text-lg">
+        <div className="max-w-2xl mx-auto px-4 md:px-8 mt-12 space-y-4 text-ink-mute text-lg">
           <p>Every mandate is a statement of love — for people, places, a future.</p>
           <p>We keep it in the client's own words first. Then we translate it into something we can measure against — six modes of love, each with a shadow it can collapse into.</p>
         </div>

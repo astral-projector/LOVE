@@ -128,7 +128,7 @@ export default function AdditionalityGate() {
 
   if (reducedMotion) {
     return (
-      <section id="gate" aria-label="The additionality gate" className="py-24 px-8">
+      <section id="gate" aria-label="The additionality gate" className="py-24 px-4 md:px-8">
         <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12">
           <div className="space-y-8">
             <div className="bg-ground-2 border border-gate rounded-lg p-6">
@@ -148,7 +148,7 @@ export default function AdditionalityGate() {
 
   return (
     <section id="gate" aria-label="The additionality gate" ref={outerRef} style={{ height: '500vh' }}>
-      <div ref={stickyRef} className="h-screen flex items-center justify-center px-8">
+      <div ref={stickyRef} className="h-screen flex items-center justify-center px-4 md:px-8">
         <div className="max-w-5xl w-full grid md:grid-cols-2 gap-12 items-start">
           <div className="bg-ground-2 border border-gate rounded-lg p-6">
             <p className="text-xs font-mono text-gate uppercase tracking-widest mb-4">Additionality Gate</p>

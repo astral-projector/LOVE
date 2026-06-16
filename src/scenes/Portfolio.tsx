@@ -74,7 +74,7 @@ export default function Portfolio() {
 
   if (reducedMotion) {
     return (
-      <section id="portfolio" aria-label="The portfolio" className="py-24 px-8">
+      <section id="portfolio" aria-label="The portfolio" className="py-24 px-4 md:px-8">
         <div className="max-w-2xl mx-auto mb-12">
           <p className="text-ink-mute text-lg">This is the portfolio. Fifty million dollars of stated good intentions.</p>
         </div>
@@ -85,7 +85,7 @@ export default function Portfolio() {
 
   return (
     <section id="portfolio" aria-label="The portfolio" ref={outerRef} style={{ height: '250vh' }}>
-      <div ref={stickyRef} className="h-screen flex flex-col justify-center px-8">
+      <div ref={stickyRef} className="h-screen flex flex-col justify-center px-4 md:px-8">
         <div className="max-w-2xl mx-auto mb-8">
           <p className="text-ink-mute text-lg leading-relaxed">
             This is the portfolio. Fifty million dollars of stated good intentions. Public companies, a fund, two private deals, a grant. Most tools would now give you a number. We're going to do something slower, and truer.

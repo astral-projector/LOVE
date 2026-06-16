@@ -30,7 +30,7 @@ export default function Decompose() {
 
   return (
     <section id="decompose" aria-label="Decomposition" ref={outerRef} style={{ height: '300vh' }}>
-      <div ref={stickyRef} className="h-screen flex flex-col justify-center items-center px-8 gap-8">
+      <div ref={stickyRef} className="h-screen flex flex-col justify-center items-center px-4 md:px-8 gap-8">
         <div className="max-w-2xl w-full">
           <p className="text-ink-mute text-lg leading-relaxed mb-8">
             A company is not one thing. This food maker feeds people cheaply — and also sells sugar to children and markets formula where clean water is scarce. So we don't attribute to the company. We break every holding down to the activities underneath, and attribute to those.
@@ -39,14 +39,14 @@ export default function Decompose() {
 
         {/* Original card fades out as activities appear */}
         <div
-          className="bg-ground-2 border border-rule rounded-lg p-5 w-64 text-center"
+          className="bg-ground-2 border border-rule rounded-lg p-5 w-full max-w-xs text-center"
           style={{ opacity: 1 - p * 1.5, transition: 'opacity 0.3s ease' }}
         >
           <p className="text-ink font-medium">Meridian Foods plc</p>
           <p className="text-ink-mute text-sm font-mono mt-1">$12M · Listed equity</p>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 max-w-3xl w-full">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl w-full">
           {meridian.activities.map((a, i) => (
             <div
               key={a.id}

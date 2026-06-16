@@ -11,10 +11,10 @@ export default function ColdOpen() {
       className="h-screen flex flex-col items-center justify-center relative"
     >
       <p className="text-ink-mute text-sm tracking-widest uppercase mb-16 font-mono">Throughline</p>
-      <p className="text-4xl md:text-5xl text-ink text-center max-w-2xl leading-tight mb-4">
+      <p className="text-3xl md:text-5xl text-ink text-center max-w-2xl leading-tight mb-4">
         Your capital is always making promises.
       </p>
-      <p className="text-4xl md:text-5xl text-ink text-center max-w-2xl leading-tight">
+      <p className="text-3xl md:text-5xl text-ink text-center max-w-2xl leading-tight">
         This is how you find out whether they're kept.
       </p>
       <div

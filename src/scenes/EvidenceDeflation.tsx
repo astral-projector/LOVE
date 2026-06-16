@@ -30,7 +30,7 @@ export default function EvidenceDeflation() {
 
   const content = (
     <div className="max-w-3xl w-full space-y-8">
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-ground-2 border border-rule rounded-lg p-6">
           <p className="text-xs font-mono text-ink-mute mb-1">Grade A — strong evidence</p>
           <p className="text-ink mb-4">Rooted Health → Vitality</p>
@@ -85,7 +85,7 @@ export default function EvidenceDeflation() {
 
   if (reducedMotion) {
     return (
-      <section id="deflate" aria-label="Evidence deflation" className="py-24 px-8">
+      <section id="deflate" aria-label="Evidence deflation" className="py-24 px-4 md:px-8">
         <div className="max-w-2xl mx-auto mb-8">
           <p className="text-ink-mute text-lg">Not all evidence is equal, so not all signal is equal. Weak evidence makes the flow thinner — always visibly, never in the fine print.</p>
         </div>
@@ -96,7 +96,7 @@ export default function EvidenceDeflation() {
 
   return (
     <section id="deflate" aria-label="Evidence deflation" ref={outerRef} style={{ height: '300vh' }}>
-      <div ref={stickyRef} className="h-screen flex flex-col justify-center items-center px-8 gap-8">
+      <div ref={stickyRef} className="h-screen flex flex-col justify-center items-center px-4 md:px-8 gap-8">
         <p className="text-ink-mute text-lg text-center max-w-2xl leading-relaxed">
           Not all evidence is equal, so not all signal is equal. Weak evidence makes the flow thinner — always visibly, never in the fine print.
         </p>

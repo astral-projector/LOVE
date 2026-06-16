@@ -27,9 +27,12 @@ export default function Walkthrough() {
     return () => mq.removeEventListener('change', handler)
   }, [])
 
+  // Note: GSAP ScrollTrigger pinning can feel slightly janky on mobile due to
+  // iOS inertia scrolling, but the current sticky/pin setup works. Scene
+  // heights are kept as-is intentionally.
   return (
     <ReducedMotionContext.Provider value={reducedMotion}>
-      <div className="relative">
+      <div className="relative pl-0 md:pl-10">
         <ScrollRail />
         <ColdOpen />
         <Mandate />

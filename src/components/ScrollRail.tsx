@@ -14,7 +14,7 @@ export default function ScrollRail() {
   }, [])
 
   return (
-    <div className="fixed left-4 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-6 items-center">
+    <div className="hidden md:flex fixed left-4 top-1/2 -translate-y-1/2 z-50 flex-col gap-6 items-center">
       <div className="w-px bg-rule absolute inset-y-0 left-1/2 -translate-x-1/2" />
       {modes.map((m, i) => (
         <div key={m.id} className="relative flex items-center gap-2">

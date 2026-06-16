@@ -117,7 +117,9 @@ export default function LoveSankey() {
 
   useEffect(() => {
     const update = () => {
-      const w = Math.min(window.innerWidth - 64, 1000)
+      const isMobile = window.innerWidth < 768
+      const margin = isMobile ? 32 : 64
+      const w = Math.min(window.innerWidth - margin, 1000)
       const h = Math.min(window.innerHeight - 200, 600)
       setDimensions({ width: w, height: h })
     }
@@ -141,12 +143,17 @@ export default function LoveSankey() {
 
   const { nodes, links } = buildGraph(viewMode)
   const { width, height } = dimensions
+  // On narrow screens, keep a minimum width so labels don't squish — the
+  // container scrolls horizontally instead.
+  const svgWidth = Math.max(600, width)
 
   const sankeyLayout = sankey<SNode, SLink>()
     .nodeId(((_d: any, i: number) => i) as any)
     .nodeWidth(16)
     .nodePadding(10)
-    .extent([[1, 1], [width - 1, height - 1]])
+    // Inset left/right so end-anchored node labels have room and aren't
+    // clipped by the horizontally-scrollable container on mobile.
+    .extent([[140, 1], [svgWidth - 60, height - 1]])
 
   let sankeyData: { nodes: (SNode & SankeyNode<SNode, SLink>)[]; links: (SLink & SankeyLink<SNode, SLink>)[] } | null = null
   try {
@@ -160,7 +167,7 @@ export default function LoveSankey() {
   return (
     <section id="sankey" aria-label="The Love Sankey" ref={outerRef} style={{ height: '400vh' }}>
       <div ref={stickyRef} className="h-screen flex flex-col justify-center items-center px-4 gap-4">
-        <div className="flex items-center justify-between w-full max-w-4xl">
+        <div className="flex items-center justify-between w-full px-4">
           <p className="text-ink-mute text-sm max-w-md leading-relaxed">
             This is the portfolio, told honestly. Flip between what you <em className="text-ink not-italic">caused</em> and what you're <em className="text-ink not-italic">attached to</em>.
           </p>
@@ -180,10 +187,10 @@ export default function LoveSankey() {
           </div>
         </div>
 
-        <div className="relative">
+        <div className="relative" style={{ overflowX: 'auto', width: '100%' }}>
           <svg
             ref={svgRef}
-            width={width}
+            width={svgWidth}
             height={height}
             className="overflow-visible"
           >

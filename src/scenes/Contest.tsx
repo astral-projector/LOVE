@@ -38,7 +38,7 @@ export default function Contest() {
 
   return (
     <section id="contest" aria-label="Support and erosion in contest" ref={outerRef} style={{ height: '300vh' }}>
-      <div ref={stickyRef} className="h-screen flex flex-col justify-center items-center px-8 gap-8">
+      <div ref={stickyRef} className="h-screen flex flex-col justify-center items-center px-4 md:px-8 gap-8">
         <p className="text-ink-mute text-lg text-center max-w-2xl leading-relaxed">
           The good and the harm are both real. Averaging is how honesty dies. Both flows stay on the page, at full strength, in different colours. You are allowed to hold a contradiction.
         </p>
@@ -53,7 +53,7 @@ export default function Contest() {
                 className="flex items-center gap-4 transition-all duration-300"
                 style={{ transform: `translateY(${y}px)`, opacity: Math.min(1, show * 2 - i * 0.2) }}
               >
-                <span className="text-ink-mute text-sm w-48 text-right">{f.label}</span>
+                <span className="text-ink-mute text-sm w-32 md:w-48 text-right">{f.label}</span>
                 <div className="flex-1 h-3 bg-rule rounded overflow-hidden">
                   <div
                     className="h-full rounded transition-all duration-700"
