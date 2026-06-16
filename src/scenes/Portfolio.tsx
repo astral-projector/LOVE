@@ -1,5 +1,4 @@
-import { useRef, useEffect, useContext } from 'react'
-import { gsap } from 'gsap'
+import { useRef, useEffect, useContext, useState } from 'react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { holdings } from '../data/demo'
 import { ReducedMotionContext } from '../context'
@@ -27,24 +26,17 @@ function formatMoney(n: number) {
 export default function Portfolio() {
   const outerRef = useRef<HTMLDivElement>(null)
   const stickyRef = useRef<HTMLDivElement>(null)
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([])
+  const [visible, setVisible] = useState(false)
   const reducedMotion = useContext(ReducedMotionContext)
 
   useEffect(() => {
-    if (reducedMotion || !outerRef.current) return
+    if (!outerRef.current) return
+    if (reducedMotion) { setVisible(true); return }
 
-    gsap.set(cardRefs.current, { opacity: 0, y: 30 })
-
-    const trigger = ScrollTrigger.create({
+    const enterTrigger = ScrollTrigger.create({
       trigger: outerRef.current,
       start: 'top 80%',
-      end: 'top 20%',
-      onEnter: () => {
-        gsap.to(cardRefs.current, {
-          opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: 'power2.out',
-        })
-      },
-      pin: false,
+      onEnter: () => setVisible(true),
     })
 
     const pinTrigger = ScrollTrigger.create({
@@ -55,7 +47,7 @@ export default function Portfolio() {
       pinSpacing: false,
     })
 
-    return () => { trigger.kill(); pinTrigger.kill() }
+    return () => { enterTrigger.kill(); pinTrigger.kill() }
   }, [reducedMotion])
 
   const grid = (
@@ -63,8 +55,12 @@ export default function Portfolio() {
       {holdings.map((h, i) => (
         <div
           key={h.id}
-          ref={el => { cardRefs.current[i] = el }}
-          className={`bg-ground-2 border border-rule rounded-lg p-5 ${reducedMotion ? '' : 'opacity-0'}`}
+          className="bg-ground-2 border border-rule rounded-lg p-5"
+          style={{
+            opacity: visible ? 1 : 0,
+            transform: visible ? 'translateY(0)' : 'translateY(20px)',
+            transition: `opacity 0.5s ease ${i * 80}ms, transform 0.5s ease ${i * 80}ms`,
+          }}
         >
           <p className="text-ink font-medium leading-snug mb-3">{h.name}</p>
           <span className={`text-xs font-mono border rounded px-2 py-0.5 ${typeColor[h.type]}`}>

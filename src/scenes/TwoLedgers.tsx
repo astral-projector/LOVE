@@ -1,5 +1,4 @@
-import { useRef, useEffect, useContext } from 'react'
-import { gsap } from 'gsap'
+import { useRef, useEffect, useContext, useState } from 'react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { holdings, causalWeight, exposureWeight } from '../data/demo'
 import { ReducedMotionContext } from '../context'
@@ -13,21 +12,11 @@ function formatMoney(n: number) {
 export default function TwoLedgers() {
   const outerRef = useRef<HTMLDivElement>(null)
   const stickyRef = useRef<HTMLDivElement>(null)
-  const dividerRef = useRef<HTMLDivElement>(null)
-  const leftRef = useRef<HTMLDivElement>(null)
-  const rightRef = useRef<HTMLDivElement>(null)
+  const [progress, setProgress] = useState(0)
   const reducedMotion = useContext(ReducedMotionContext)
 
   useEffect(() => {
     if (reducedMotion || !outerRef.current) return
-
-    gsap.set([dividerRef.current, leftRef.current, rightRef.current], { opacity: 0 })
-
-    const tl = gsap.timeline({ paused: true })
-    tl.to(dividerRef.current, { opacity: 1, scaleY: 1, duration: 0.4 })
-    tl.to(leftRef.current, { opacity: 1, x: 0, duration: 0.4 }, 0.2)
-    tl.to(rightRef.current, { opacity: 1, x: 0, duration: 0.4 }, 0.3)
-
     const trigger = ScrollTrigger.create({
       trigger: outerRef.current,
       start: 'top top',
@@ -35,18 +24,21 @@ export default function TwoLedgers() {
       pin: stickyRef.current,
       pinSpacing: false,
       scrub: 0.5,
-      onUpdate: (self) => tl.progress(self.progress),
+      onUpdate: (self) => setProgress(self.progress),
     })
-
-    return () => { trigger.kill(); tl.kill() }
+    return () => trigger.kill()
   }, [reducedMotion])
 
+  const p = reducedMotion ? 1 : progress
   const causal = causalWeight(meridian)
   const exposure = exposureWeight(meridian)
 
   const content = (
     <div className="grid grid-cols-2 gap-px bg-rule max-w-3xl w-full rounded-lg overflow-hidden">
-      <div ref={leftRef} className="bg-ground-2 p-8">
+      <div
+        className="bg-ground-2 p-8"
+        style={{ opacity: Math.min(1, p * 2), transform: `translateX(${(1 - Math.min(1, p * 2)) * -20}px)`, transition: 'none' }}
+      >
         <p className="text-xs font-mono text-ink-mute uppercase tracking-widest mb-6">Causal</p>
         <p className="text-ink text-xl mb-2">What your capital moved</p>
         <div className="mt-8 space-y-3">
@@ -62,7 +54,11 @@ export default function TwoLedgers() {
           <p className="text-xs text-ink-mute mt-1">{meridian.additionality.note}</p>
         </div>
       </div>
-      <div ref={rightRef} className="bg-ground-2 p-8">
+
+      <div
+        className="bg-ground-2 p-8"
+        style={{ opacity: Math.min(1, p * 2 - 0.2), transform: `translateX(${(1 - Math.min(1, p * 2 - 0.2)) * 20}px)`, transition: 'none' }}
+      >
         <p className="text-xs font-mono text-ink-mute uppercase tracking-widest mb-6">Exposure</p>
         <p className="text-ink text-xl mb-2">What you're attached to</p>
         <div className="mt-8 space-y-3">

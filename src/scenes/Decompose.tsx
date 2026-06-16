@@ -1,5 +1,4 @@
-import { useRef, useEffect, useContext } from 'react'
-import { gsap } from 'gsap'
+import { useRef, useEffect, useContext, useState } from 'react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { holdings } from '../data/demo'
 import { ReducedMotionContext } from '../context'
@@ -9,19 +8,11 @@ const meridian = holdings.find(h => h.id === 'meridian')!
 export default function Decompose() {
   const outerRef = useRef<HTMLDivElement>(null)
   const stickyRef = useRef<HTMLDivElement>(null)
-  const cardRef = useRef<HTMLDivElement>(null)
-  const activityRefs = useRef<(HTMLDivElement | null)[]>([])
+  const [progress, setProgress] = useState(0)
   const reducedMotion = useContext(ReducedMotionContext)
 
   useEffect(() => {
     if (reducedMotion || !outerRef.current) return
-
-    gsap.set(activityRefs.current, { opacity: 0, y: 20 })
-
-    const tl = gsap.timeline({ paused: true })
-    tl.to(cardRef.current, { y: -20, scale: 0.95, opacity: 0.5, duration: 0.3 })
-    tl.to(activityRefs.current, { opacity: 1, y: 0, stagger: 0.1, duration: 0.4 }, 0.2)
-
     const trigger = ScrollTrigger.create({
       trigger: outerRef.current,
       start: 'top top',
@@ -29,13 +20,13 @@ export default function Decompose() {
       pin: stickyRef.current,
       pinSpacing: false,
       scrub: 0.5,
-      onUpdate: (self) => tl.progress(self.progress),
+      onUpdate: (self) => setProgress(self.progress),
     })
-
-    return () => { trigger.kill(); tl.kill() }
+    return () => trigger.kill()
   }, [reducedMotion])
 
-  const polarityColor = (p: string) => p === 'support' ? 'text-support' : 'text-erosion'
+  const p = reducedMotion ? 1 : progress
+  const polarityColor = (pol: string) => pol === 'support' ? 'var(--support)' : 'var(--erosion)'
 
   return (
     <section id="decompose" aria-label="Decomposition" ref={outerRef} style={{ height: '300vh' }}>
@@ -46,7 +37,11 @@ export default function Decompose() {
           </p>
         </div>
 
-        <div ref={cardRef} className="bg-ground-2 border border-rule rounded-lg p-5 w-64 text-center">
+        {/* Original card fades out as activities appear */}
+        <div
+          className="bg-ground-2 border border-rule rounded-lg p-5 w-64 text-center"
+          style={{ opacity: 1 - p * 1.5, transition: 'opacity 0.3s ease' }}
+        >
           <p className="text-ink font-medium">Meridian Foods plc</p>
           <p className="text-ink-mute text-sm font-mono mt-1">$12M · Listed equity</p>
         </div>
@@ -55,12 +50,16 @@ export default function Decompose() {
           {meridian.activities.map((a, i) => (
             <div
               key={a.id}
-              ref={el => { activityRefs.current[i] = el }}
-              className={`bg-ground-2 border border-rule rounded-lg p-4 ${reducedMotion ? '' : 'opacity-0'}`}
+              className="bg-ground-2 border border-rule rounded-lg p-4"
+              style={{
+                opacity: Math.max(0, p * 3 - i * 0.5),
+                transform: `translateY(${Math.max(0, (1 - p) * 20)}px)`,
+                transition: 'none',
+              }}
             >
               <p className="text-ink text-sm leading-snug mb-3">{a.label}</p>
               {a.impacts.map((imp, j) => (
-                <div key={j} className={`text-xs font-mono ${polarityColor(imp.polarity)}`}>
+                <div key={j} className="text-xs font-mono" style={{ color: polarityColor(imp.polarity) }}>
                   {imp.polarity === 'support' ? '↑' : '↓'} {imp.mode}
                 </div>
               ))}
