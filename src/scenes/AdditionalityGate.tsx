@@ -1,7 +1,7 @@
 import { useRef, useEffect, useContext, useState } from 'react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { holdings } from '../data/demo'
-import { ReducedMotionContext } from '../components/Walkthrough'
+import { ReducedMotionContext } from '../context'
 
 const meridian = holdings.find(h => h.id === 'meridian')!
 

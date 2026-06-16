@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { ReducedMotionContext } from '../context'
 import ScrollRail from './ScrollRail'
 import ColdOpen from '../scenes/ColdOpen'
 import Mandate from '../scenes/Mandate'
@@ -14,8 +15,6 @@ import LoveSankey from '../scenes/LoveSankey'
 import Close from '../scenes/Close'
 
 gsap.registerPlugin(ScrollTrigger)
-
-export const ReducedMotionContext = React.createContext(false)
 
 export default function Walkthrough() {
   const [reducedMotion, setReducedMotion] = useState(false)

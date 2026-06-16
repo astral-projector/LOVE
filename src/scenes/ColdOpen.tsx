@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { ReducedMotionContext } from '../components/Walkthrough'
+import { ReducedMotionContext } from '../context'
 
 export default function ColdOpen() {
   const reducedMotion = useContext(ReducedMotionContext)

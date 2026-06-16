@@ -2,7 +2,7 @@ import { useRef, useEffect, useContext } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { modes } from '../data/demo'
-import { ReducedMotionContext } from '../components/Walkthrough'
+import { ReducedMotionContext } from '../context'
 
 const mandateParts = [
   { text: "This Trust holds the family's capital for the long benefit of ", highlight: false },

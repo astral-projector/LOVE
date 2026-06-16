@@ -1,6 +1,6 @@
 import { useRef, useEffect, useContext, useState } from 'react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ReducedMotionContext } from '../components/Walkthrough'
+import { ReducedMotionContext } from '../context'
 
 export default function Contest() {
   const outerRef = useRef<HTMLDivElement>(null)

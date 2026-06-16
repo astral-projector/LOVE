@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useContext } from 'react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ReducedMotionContext } from './Walkthrough'
+import { ReducedMotionContext } from '../context'
 
 interface SceneProps {
   id: string

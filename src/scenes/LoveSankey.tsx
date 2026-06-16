@@ -3,7 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { sankey, sankeyLinkHorizontal } from 'd3-sankey'
 import type { SankeyNode, SankeyLink } from 'd3-sankey'
 import { holdings, modes, causalWeight, exposureWeight } from '../data/demo'
-import { ReducedMotionContext } from '../components/Walkthrough'
+import { ReducedMotionContext } from '../context'
 
 type ViewMode = 'causal' | 'exposure'
 
